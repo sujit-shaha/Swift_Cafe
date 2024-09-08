@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:swift_cafe/screens/DetailPage.dart';
+import 'package:swift_cafe/screens/HomePage.dart';
 import 'package:swift_cafe/screens/LoginScreen.dart';
 
 void main() {
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Loginscreen(),
+      home: HomePage(),
     );
   }
 }
