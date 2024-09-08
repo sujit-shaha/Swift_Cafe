@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:swift_cafe/screens/DetailPage.dart';
-import 'package:swift_cafe/screens/HomePage.dart';
 
 Widget beverageCard(BuildContext context, String title, String imagePath,
     String rating, String reviews) {
   return Container(
-    width: MediaQuery
-        .of(context)
-        .size
-        .width * 0.35,
+    width: MediaQuery.of(context).size.width * 0.35,
     decoration: BoxDecoration(
       color: Colors.white.withOpacity(0.3),
       borderRadius: BorderRadius.circular(20),
@@ -30,20 +26,33 @@ Widget beverageCard(BuildContext context, String title, String imagePath,
           ],
         ),
         SizedBox(height: 10),
-        Container(
-          padding: EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            shape: BoxShape.circle,
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => DetailPage(
+                    title: title,
+                    imagePath: imagePath,
+                    rating: rating,
+                    description: 'Caffè latte is a milk coffee that is a made up of one or two shots of espresso, steamed milk and a final, thin layer of frothed milk on top.',
+                    numberOfRatingsGiven: reviews),
+              ),
+            );
+          },
+          child: Container(
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.add, color: Colors.white, size: 20),
           ),
-          child: Icon(Icons.add, color: Colors.white, size: 20),
         ),
       ],
     ),
   );
 }
-
-
 
 Widget beverageCardVertical(BuildContext context, String title,
     String imagePath, String rating, String reviews, String description) {
@@ -65,7 +74,8 @@ Widget beverageCardVertical(BuildContext context, String title,
               children: [
                 Text(
                   title,
-                  style: TextStyle(color: Colors.white,
+                  style: TextStyle(
+                      color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold),
                 ),
@@ -117,14 +127,23 @@ Widget beverageCardVertical(BuildContext context, String title,
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (ctx) => DetailPage(title: title, imagePath: imagePath, rating: rating, description: description, numberOfRatingsGiven: reviews )));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (ctx) => DetailPage(
+                          title: title,
+                          imagePath: imagePath,
+                          rating: rating,
+                          description: description,
+                          numberOfRatingsGiven: reviews),
+                    ),
+                  );
                 },
                 child: Text('ADD'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(),
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
               ),
             ],
@@ -134,5 +153,3 @@ Widget beverageCardVertical(BuildContext context, String title,
     ),
   );
 }
-
-

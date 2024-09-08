@@ -160,6 +160,7 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+
   Widget buildCustomizationSection(String title, List<String> options, Set<String> selectedOptions, Function(Set<String>) onSelected) {
     final screenSize = MediaQuery.of(context).size;
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
@@ -197,3 +198,4 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 }
+

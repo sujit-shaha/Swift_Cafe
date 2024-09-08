@@ -1,16 +1,42 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swift_cafe/auth_service.dart';
 import 'package:swift_cafe/screens/HomePage.dart';
-import 'package:swift_cafe/screens/SignUpPage.dart';
+import 'package:swift_cafe/screens/LoginScreen.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
   static final TextEditingController _userTextController = TextEditingController();
   static final TextEditingController _passwordTextController = TextEditingController();
+  File? _profileImage;
+  final ImagePicker _picker = ImagePicker();
+
+  // Function to pick image from gallery or camera
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+      _storeImagePath(pickedFile.path); // Save path to SharedPreferences
+    }
+  }
+
+  Future<void> _storeImagePath(String imagePath) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('profile_image', imagePath);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,33 +61,38 @@ class LoginPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    "assets/img.png",
-                    height: 100,
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : AssetImage("assets/avatar_placeholder.png") as ImageProvider,
+                      child: _profileImage == null
+                          ? Icon(Icons.camera_alt, size: 40, color: Colors.white)
+                          : null,
+                    ),
                   ),
-                  SizedBox(
-                    height: 5,
-                  ),
+                  SizedBox(height: 20),
                   Text(
                     "Swift Café",
                     style: GoogleFonts.raleway(
-                        fontSize: 32, // Adjust size according to your design
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                        decoration: TextDecoration.none
+                      fontSize: 32,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                      decoration: TextDecoration.none,
                     ),
                   ),
                   Text(
-                    "Latte but never late",
+                    "Create your account",
                     style: GoogleFonts.raleway(
-                        fontSize: 16, // Adjust size according to your design
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.italic, // Match the design
-                        color: Colors.white70,
-                        decoration: TextDecoration.none
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.white70,
+                      decoration: TextDecoration.none,
                     ),
                   ),
-
                   SizedBox(height: 40),
                   TextField(
                     controller: _userTextController,
@@ -97,45 +128,16 @@ class LoginPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        // Call the signIn method
-                        await AuthService().signInWithUsername(
+                        // Call the signUp method
+                        await AuthService().signUpWithUsername(
                           _userTextController.text,
                           _passwordTextController.text,
                         );
-                        // Navigate to the HomePage on successful login
-                        Navigator.push(context, MaterialPageRoute(builder: (ctx) => HomePage()));
+                        // Navigate to the HomePage on successful sign up
+                        Navigator.push(context, MaterialPageRoute(builder: (ctx) => LoginPage()));
                       } catch (e) {
                         showErrorDialog(context, e.toString());
                       }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.brown.shade700, Colors.brown.shade300],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-
-                      Navigator.push(context, MaterialPageRoute(builder: (ctx) => SignUpPage(),),);
-
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
@@ -151,6 +153,7 @@ class LoginPage extends StatelessWidget {
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
+
                   SizedBox(height: 10),
                   TextButton(
                     onPressed: () {
@@ -158,9 +161,6 @@ class LoginPage extends StatelessWidget {
                     },
                     child: Text('Privacy Policy', style: TextStyle(color: Colors.white70)),
                   ),
-
-                  SizedBox(height: 30),
-
                 ],
               ),
             ),
@@ -190,6 +190,5 @@ class LoginPage extends StatelessWidget {
       },
     );
   }
-
 
 }

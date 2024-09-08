@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:swift_cafe/screens/DetailPage.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swift_cafe/screens/HomePage.dart';
 import 'package:swift_cafe/screens/LoginScreen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // Check login status
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool? isLoggedIn = prefs.getBool('isLoggedIn');
+
+  runApp(MyApp(isLoggedIn: isLoggedIn ?? false));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+
+  MyApp({required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: HomePage(),
+      home: isLoggedIn ? HomePage() : LoginPage(),
     );
   }
 }
